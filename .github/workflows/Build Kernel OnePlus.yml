@@ -1527,6 +1527,10 @@ jobs:
         run: |
           git clone https://github.com/Numbersf/AnyKernel3 --depth=1
           rm -rf ./AnyKernel3/.git
+          if [ -f ./AnyKernel3/anykernel.sh ]; then
+            sed -i 's/Powered by GitHub@Numbersf（Aq1298&咿云冷雨）/Powered by GitHub@爱玩机的小驴/g' ./AnyKernel3/anykernel.sh
+            sed -i 's/Powered by GitHub@Numbersf(Aq1298&咿云冷雨)/Powered by GitHub@爱玩机的小驴/g' ./AnyKernel3/anykernel.sh
+          fi
           mkdir -p kernel_workspace/kernel_platform/out/Final-Image-Find/
           image_path=""
           if [ -d "./kernel_workspace/kernel_platform/common/out/" ]; then
