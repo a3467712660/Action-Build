@@ -124,7 +124,7 @@ jobs:
             {
               "FILE": "${{ matrix.file }}",
               "SUSFS_CI": "NoN",
-              "KSU_META": "susfs-main/Numbersf/",
+              "KSU_META": "susfs-main/闲鱼爱玩机的小驴/",
               "BUILD_TIME": "F",
               "SUFFIX": "",
               "FAST_BUILD": "true",

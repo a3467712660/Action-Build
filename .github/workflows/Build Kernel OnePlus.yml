@@ -114,7 +114,7 @@ on:
         type: string
         description: "分支名(必填)/自定义版本标识(留空不修改)/回退分支提交哈希版本(留空不修改)"
         required: false
-        default: "main/Numbersf/"
+        default: "main/闲鱼爱玩机的小驴/"
       LZ4_UPDATE:
         type: boolean
         description: "是否升级LZ4到上游最新？"
@@ -436,7 +436,7 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.name "Numbersf"
+          git config --global user.name "闲鱼爱玩机的小驴"
           git config --global user.email "263623064@qq.com"
           mkdir kernel_workspace && cd kernel_workspace
           git clone https://github.com/Numbersf/Action-Build.git -b ReSukiSU
