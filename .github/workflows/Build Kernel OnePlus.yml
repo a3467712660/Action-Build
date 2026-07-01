@@ -4,7 +4,7 @@ on:
     inputs:
       FILE:
         type: choice
-        description: "配置文件"
+        description: "配置文件//Configuration file"
         required: true
         default: oneplus_ace2_pro_b
         options:
@@ -71,7 +71,7 @@ on:
           - oneplus_ace6_ultra_Canary
       MANAGER_SOURCE:
         type: choice
-        description: "管理器调用方向"
+        description: "管理器调用方向//Manager download source"
         required: true
         default: MIUIX
         options:
@@ -81,7 +81,7 @@ on:
           - MD3_SPOOF
       SUSFS_CI:
         type: choice
-        description: "SUSFS模块下载调用方向"
+        description: "SUSFS模块下载调用方向//SUSFS module branch"
         required: true
         default: N/A
         options:
@@ -90,7 +90,7 @@ on:
           - N/A
       KPM:
         type: choice
-        description: "内核模块实现方式"
+        description: "内核模块实现方式//Kernel module implementation method"
         required: true
         default: KPM
         options:
@@ -99,96 +99,96 @@ on:
           - N/A
       SUSFS_META:
         type: string
-        description: "回退SUSFS(输入哈希或次数或-1关闭)"
+        description: "回退SUSFS(输入哈希或次数或-1关闭)//Rollback SUSFS (Enter commit hash, count, or -1 to disable)"
         required: false
         default: ""
       DYNAMIC_REPO:
         type: string
-        description: "动态清单仓库所有者"
+        description: "动态清单仓库所有者//Manifest repository owner"
         required: true
         default: "Numbersf"
       BUILD_TIME:
         type: string
-        description: "自定义构建时间(输入F使用UTCT或-1关闭)"
+        description: "自定义构建时间(输入F使用UTCT或-1关闭)//Custom build time (Enter F to use UTCT, or -1 to disable)"
         required: false
         default: "Fri Dec 12 11:37:03 UTC 2025"
       KSU_META:
         type: string
-        description: "分支名(必填)/自定义版本标识(留空不修改)/回退分支提交哈希版本(留空不修改)"
+        description: "分支名(必填)/自定义版本标识(留空不修改)/回退分支提交哈希版本(留空不修改)//Branch name (Required) / Custom version identifier (Leave blank to not modify) / Rollback branch commit hash version (Leave blank to not modify)"
         required: false
         default: "builtin/Numbersf/"
       LZ4_UPDATE:
         type: boolean
-        description: "是否升级LZ4到上游最新？"
+        description: "是否升级LZ4到上游最新？//Upgrade LZ4 to the latest upstream?"
         required: true
         default: false
       ZRAM:
         type: string
-        description: "ZRAM(0关闭1开启)/算法名/大小"
+        description: "ZRAM(0关闭1开启)/算法名/大小//ZRAM (0: disable, 1: enable) / Algorithm name / Size"
         required: true
         default: "0/lz4kd/8589934592"
       SUFFIX:
         type: string
-        description: "自定义内核后缀(不输入使用RAND_STR或-1关闭)"
+        description: "自定义内核后缀(不输入使用RAND_STR或-1关闭)//Custom kernel suffix (Leave blank to use RAND_STR, or -1 to disable)"
         required: false
         default: ""
-      SUBLEVEL:
-        description: "自定义内核等级欺骗(SUBLEVEL)"
+      RESUBLEVEL:
+        description: "自定义内核等级欺骗(SUBLEVEL)//Custom kernel SUBLEVEL spoofing"
         required: false
         default: ""
       FAST_BUILD:
         type: boolean
-        description: "是否启用极速构建？"
+        description: "是否启用极速构建？//Enable ultra-fast build?"
         required: true
         default: true
       LSM_BBG:
         type: boolean
-        description: "是否启用关键分区写入保护模块(BBG)？"
+        description: "是否启用关键分区写入保护模块(BBG)？//Enable critical partition write protection module (BBG)?"
         required: true
         default: true
       NETFILTER:
         type: boolean
-        description: "是否启用网络功能拓展(NETFILTER)？"
+        description: "是否启用网络功能拓展(NETFILTER)？//Enable network feature extensions (NETFILTER)?"
         required: true
         default: true
       CCM:
         type: boolean
-        description: "是否启用网络拥塞控制与管理机制(BBR+ECN)？"
+        description: "是否启用网络拥塞控制与管理机制(BBR+ECN)？//Enable network congestion control and management mechanism (BBR+ECN)?"
         required: true
         default: true
       UNICODE_BYPASS:
         type: boolean
-        description: "是否添加Unicode不可见字码点绕过读取漏洞修复？"
+        description: "是否添加Unicode不可见字码点绕过读取漏洞修复？//Add patch for Unicode invisible code point read bypass vulnerability?"
         required: true
         default: false
       SCHED_HMBIRD:
         type: boolean
-        description: "是否添加风驰驱动1.0？"
+        description: "是否添加风驰驱动1.0？//Add Fengchi (HMBIRD) Driver 1.0?"
         required: true
         default: false
       DROID_SPACES:
         type: boolean
-        description: "是否添加轻量级Linux容器支持(DroidSpaces)？"
+        description: "是否添加轻量级Linux容器支持(DroidSpaces)？//Add lightweight Linux container support (DroidSpaces)?"
         required: true
         default: false
       RE_KERNEL:
         type: boolean
-        description: "是否添加Re-Kernel？"
+        description: "是否添加Re-Kernel？//Add Re-Kernel?"
         required: true
         default: false
       SUSFS_DEV:
         type: boolean
-        description: "是否拉取SUSFS-DEV分支？"
+        description: "是否拉取SUSFS-DEV分支？//Pull the SUSFS-DEV branch?"
         required: true
         default: false
       SPACE_NOCLEAN:
         type: boolean
-        description: "是否停用空间清扫？"
+        description: "是否停用空间清扫？//Disable workspace cleaning?"
         required: true
         default: false
       BUILD_NOCACHE:
         type: boolean
-        description: "是否停用此次缓存？"
+        description: "是否停用此次缓存？//Disable caching for this build?"
         required: true
         default: false
 
@@ -581,7 +581,7 @@ jobs:
       - name: Kernel Version Handling
         run: |
           cd kernel_workspace/kernel_platform
-          # 获取内核 Android 版本号(KANDROID_VERSION)以及内核版本号(KERNEL_VERSION)
+          # 获取内核 Android 版本号(KANDROID_VERSION)以及内核版本号(KERNEL_VERSION 2位)
           for f in ./common/build.config.constants ./common/build.config.common; do
             if [ -f "$f" ]; then
               KMI=$(grep -m1 '^BRANCH=' "$f" | cut -d= -f2)
@@ -599,33 +599,39 @@ jobs:
             echo "No KMI found in build.config* and ACK_SHA files"
           fi
 
-          # 从 Makefile 获取完整内核版本号(TKERNEL_VERSION)以及可选的修改内核等级
+          # 从 Makefile 获取完整内核版本号 (CD) 并拆分
+          VERSIONLEVEL=$(awk '/^VERSION =/ {print $3}' ./common/Makefile)
+          PATCHLEVEL=$(awk '/^PATCHLEVEL =/ {print $3}' ./common/Makefile)
+          SUBLEVEL=$(awk '/^SUBLEVEL =/ {print $3}' ./common/Makefile)
+          echo "VERSIONLEVEL=$VERSIONLEVEL" >> $GITHUB_ENV
+          echo "PATCHLEVEL=$PATCHLEVEL" >> $GITHUB_ENV
+          # SUBLEVEL 仅传递修改前的值，因为伪装并不影响原源码状态
+          echo "SUBLEVEL=$SUBLEVEL" >> $GITHUB_ENV
           ORIG_VERSION=$(awk '/^VERSION =/ {v=$3} /^PATCHLEVEL =/ {p=$3} /^SUBLEVEL =/ {s=$3} END {print v"."p"."s}' ./common/Makefile)
 
-          # 强制修改 SUBLEVEL(内核等级)
-          SUBLEVEL_INPUT="${{ github.event.inputs.SUBLEVEL }}"
-          if [ -n "$SUBLEVEL_INPUT" ]; then
-            echo "修改 SUBLEVEL 为 $SUBLEVEL_INPUT"
-            sed -i "s/^\(SUBLEVEL[[:space:]]*=[[:space:]]*\).*/\1$SUBLEVEL_INPUT/" ./common/Makefile
+          # 强制修改 SUBLEVEL (内核等级)
+          RESUBLEVEL="${{ github.event.inputs.RESUBLEVEL }}"
+          if [ -n "$RESUBLEVEL" ]; then
+            echo "修改 SUBLEVEL 为 $RESUBLEVEL"
+            sed -i "s/^SUBLEVEL[[:space:]]*=[[:space:]]*.*/SUBLEVEL = $RESUBLEVEL/" ./common/Makefile
           else
             echo "未指定 SUBLEVEL，保持默认"
           fi
 
           # 读取修改后的版本
           NEW_VERSION=$(awk '/^VERSION =/ {v=$3} /^PATCHLEVEL =/ {p=$3} /^SUBLEVEL =/ {s=$3} END {print v"."p"."s}' ./common/Makefile)
-
+          # CKERNEL_VERSION(3位)：被修改之后或者未经过修改的完整内核版本号，用于欺骗系统
+          # DKERNEL_VERSION(3位)：被修改之前的完整内核版本号，真实值
           if [ "$ORIG_VERSION" != "$NEW_VERSION" ]; then
             echo "Kernel Version:$ORIG_VERSION->$NEW_VERSION"
-            echo "TKERNEL_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+            echo "CKERNEL_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+            echo "DKERNEL_VERSION=$ORIG_VERSION" >> $GITHUB_ENV
           else
             echo "Kernel Version:$ORIG_VERSION No changes"
-            echo "TKERNEL_VERSION=$ORIG_VERSION" >> $GITHUB_ENV
+            echo "CKERNEL_VERSION=$ORIG_VERSION" >> $GITHUB_ENV
           fi
 
-          # 内核版本的数字转换(对比用)
-          echo "KV1=${KMI#*-}"       | cut -d. -f1 >> $GITHUB_ENV
-          echo "KV2=${KMI#*-}"       | tr -d '.' >> $GITHUB_ENV
-          echo "KV3=${NEW_VERSION}"     | tr -d '.' >> $GITHUB_ENV
+          # 内核版本的数字转换，仅前两位不包含 SUBLEVEL
           echo "KERNEL_SHORT_PATCH_VERSION=$(echo $NEW_VERSION | cut -d. -f1,2 | tr '.' '_')" >> $GITHUB_ENV
 
       - name: Rust Version Handling
@@ -830,6 +836,80 @@ jobs:
           grep -nE '^(REPO_OWNER|REPO_NAME|REPO_BRANCH|KSU_VERSION_API|KSU_VERSION_FULL|VERSION_TAG|GIT_BIN|CURL_BIN)' kernel/Makefile
           echo "::endgroup::"
 
+      - name: Apply Fake Patches
+        if: ${{ github.event.inputs.SUSFS_META != '-1' }}
+        run: |
+          cd kernel_workspace/kernel_platform/common
+          if [ "$KMI" = "android12-5.10" ]; then
+            if [ "$SUBLEVEL" -le "43" ]; then
+              echo "Applying base.c Android 12 5.10 Fake Patch"
+              perl -i -pe 's/(int|size_t)\s+this_len\s*=\s*min_t\s*\(\s*\1\s*,/size_t this_len = min_t(size_t,/;' fs/proc/base.c
+            fi
+            if [ "$SUBLEVEL" -le "117" ]; then
+              echo "Applying fdinfo.c Android 12 5.10 Fake Patch"
+              sed -i '/^[[:space:]]*\/\*$/,/^[[:space:]]*u32 mask = mark->mask & IN_ALL_EVENTS;$/d' fs/notify/fdinfo.c
+              perl -i -pe 's/\bmask,\s*mark->ignored_mask/inotify_mark_user_mask(mark)/g' fs/notify/fdinfo.c
+              perl -i -pe 's/ignored_mask:%x/ignored_mask:0/g' fs/notify/fdinfo.c
+            fi
+          fi
+          if [ "$KMI" = "android13-5.15" ]; then
+            if [ "$SUBLEVEL" -le "41" ]; then
+              echo "Applying namespace.c Android 13 5.15 SUSFS fixes"
+              sed -i '/^#include <linux\/shmem_fs.h>$/a #include <linux/mnt_idmapping.h>' fs/namespace.c
+              echo "Applying open.c Android 13 5.15 Fake Patch"
+              sed -i '/^#include <linux\/compat.h>$/a #include <linux/mnt_idmapping.h>' fs/open.c
+              echo "Applying fdinfo.c Android 13 5.15 Fake Patch"
+              sed -i '/^[[:space:]]*\/\*$/,/^[[:space:]]*u32 mask = mark->mask & IN_ALL_EVENTS;$/d' fs/notify/fdinfo.c
+              perl -i -pe 's/\bmask,\s*mark->ignored_mask/inotify_mark_user_mask(mark)/g' fs/notify/fdinfo.c
+              perl -i -pe 's/ignored_mask:%x/ignored_mask:0/g' fs/notify/fdinfo.c
+            fi
+            if [ "$SUBLEVEL" -ge "123" ]; then
+              echo "Applying memory.c Android 13 5.15 Fake Patch"
+              sed -i '/#include <linux\/swap_slots\.h>/d' ./mm/memory.c
+            fi
+            if [ "$SUBLEVEL" -ge "197" ]; then
+              echo "Applying namespace.c Android 13 5.15 Fake Patch"
+              sed -i '/^#include <trace\/hooks\/blk.h>$/d' fs/namespace.c
+            fi
+            if [ "$SUBLEVEL" -ge "206" ]; then
+              echo "Applying task_mmu.c Android 13 5.15 Fake Patch"
+              sed -i '/^#include <trace\/hooks\/mm.h>$/d' fs/proc/task_mmu.c
+            fi
+          fi
+          if [ "$KMI" = "android14-6.1" ]; then
+            if [ "$SUBLEVEL" -le "141" ]; then
+              echo "Applying base.c Android 14 6.1 Fake Patch"
+              sed -i '/^#include <linux\/cpufreq_times.h>$/a #include <linux/dma-buf.h>' fs/proc/base.c
+            fi
+            if [ "$SUBLEVEL" -ge "157" ]; then
+              echo "Applying namespace.c Android 14 6.1 Fake Patch"
+              sed -i '/^#include <trace\/hooks\/blk.h>$/d' fs/namespace.c
+            fi
+          fi
+          if [ "$KMI" = "android15-6.6" ]; then
+            if [ "$SUBLEVEL" -le "30" ]; then
+              echo "Applying taskmmu.c、namespace.c Android 15 6.6 Fake Patch"
+              sed -i '/smap_gather_stats(vma, &mss, last_vma_end);/a\last_vma_end = vma->vm_end;' fs/proc/task_mmu.c
+              perl -0777 -i -pe '@l=split/\n/;for($i=$#l;$i>=0;$i--){if($l[$i]=~/last_vma_end = vma->vm_end;/){$l[$i]="\t\t\t\t".$l[$i];splice(@l,$i+1,0,"\t\t\t}");for($j=$i;$j>=0;$j--){if($l[$j]=~/if\s*\(vma->vm_end > last_vma_end\)/){$l[$j]=~s/\)\s*$/) {/;last}}last}}$_=join"\n",@l' fs/proc/task_mmu.c
+              sed -i '/#include <trace\/hooks\/blk\.h>/a #include <trace\/hooks\/fs.h>' ./fs/namespace.c
+              sed -i -e '/int ret = 0, copied = 0;/a \\tunsigned int nr_subpages \= __PAGE_SIZE \/ PAGE_SIZE;' -e '/int ret = 0, copied = 0;/a \\tpagemap_entry_t \*res = NULL;' ./fs/proc/task_mmu.c
+            fi
+            if [ "$SUBLEVEL" -le "57" ]; then
+              echo "Applying memory.c Android 15 6.6 Fake Patch"
+              sed -i '/^#include <linux\/sched\/sysctl.h>$/a #include <linux/zswap.h>' mm/memory.c
+            fi
+            if [ "$SUBLEVEL" -le "92" ]; then
+              echo "Applying base.c Android 15 6.6 Fake Patch"
+              sed -i '/^#include <linux\/cpufreq_times.h>$/a #include <linux/dma-buf.h>' fs/proc/base.c
+            fi
+          fi
+          if [ "$KMI" = "android16-6.12" ]; then
+            if [ "$SUBLEVEL" -ge "58" ]; then
+              echo "Applying exec.c Android 16 6.12 Fake Patch"
+              sed -i '/^#include <linux\/dma-buf.h>$/d' fs/exec.c
+            fi
+          fi
+
       - name: Apply Patches SukiSU Ultra
         env:
           FILE: ${{ github.event.inputs.FILE }}
@@ -874,135 +954,99 @@ jobs:
           fi
 
           cd ./common
-          SUBLEVEL=$(grep '^SUBLEVEL *=' Makefile | head -n1 | cut -d= -f2 | tr -d ' ')
 
           if [ "$KMI" == "android13-5.15" ] && [ "$SUBLEVEL" -lt 123 ]; then
             echo "修复内核版本为5.15.0~5.15.123仅支持旧版C库造成的一些bug"
-            cp ../../Action-Build/patches/fix_5.15.legacy ./fix_5.15.legacy.patch
+            cp "${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/patches/fix_5.15.legacy" ./fix_5.15.legacy.patch
             patch -p1 < fix_5.15.legacy.patch
             echo "fix_5.15_patch完成"
           fi
 
-          if [[ "${{ env.KV2 }}" == "66" && "${{ env.KV3 }}" -le 6630 && "${{ github.event.inputs.SUSFS_META }}" != "-1" ]]; then
-            TRUSTY_EXISTS="false"
-            if grep -q 'common-modules/trusty' "$GITHUB_WORKSPACE/.repo/manifests_fallback/${FILE}.xml"; then
-              TRUSTY_EXISTS="true"
-            fi
-            if [[ "$TRUSTY_EXISTS" == "false" ]]; then
-              echo "修复内核版本为6.6.0~6.6.30的机型源码及清单中缺失TrustyOS导致的susfs报错"
-              sed -i 's/-32,12 +32,38/-32,11 +32,37/g' 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch
-              sed -i '/#include <trace\/hooks\/fs.h>/d' 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch
-            fi
-          fi
-
           if [ "${{ github.event.inputs.SUSFS_META }}" != "-1" ]; then
-            # Fake Patch to fix failures
-            fake_patched=0
-            fake_patched_dist=0
-            fake_patched_swap=0
-            fake_patched_ns=0
-            fake_patched_expand=0
-            if [ "$KMI" = "android15-6.6" ]; then
-              if ! grep -qxF $'\tunsigned int nr_subpages = __PAGE_SIZE / PAGE_SIZE;' ./fs/proc/task_mmu.c; then
-                echo "未找到 nr_subpages，正在进行补丁修复"
-                sed -i -e '/int ret = 0, copied = 0;/a \\tunsigned int nr_subpages \= __PAGE_SIZE \/ PAGE_SIZE;' -e '/int ret = 0, copied = 0;/a \\tpagemap_entry_t \*res = NULL;' ./fs/proc/task_mmu.c
-                fake_patched=1
-              fi
-              if ! grep -qxF '#include <linux/dma-buf.h>' ./fs/proc/base.c; then
-                echo "未找到 #include <linux/dma-buf.h>，添加缺失的头文件"
-                sed -i '/#include <linux\/cpufreq_times.h>/a #include <linux\/dma-buf.h>' ./fs/proc/base.c
-              fi
-              if ! grep -qxF '#include <linux/zswap.h>' ./mm/memory.c; then
-                echo "未找到 #include <linux/zswap.h>，添加缺失的头文件"
-                sed -i '/#include <linux\/sched\/sysctl\.h>/a #include <linux\/zswap.h>' ./mm/memory.c
-                fake_patched_swap=1
-              fi
-              if ! grep -qxF '#include <trace/hooks/fs.h>' ./fs/namespace.c && ! grep -qxF 'susfs_def.h' ./fs/namespace.c; then
-                echo "未找到 #include <trace/hooks/fs.h>，添加缺失的头文件"
-                sed -i '/#include <trace\/hooks\/blk\.h>/a #include <trace\/hooks\/fs.h>' ./fs/namespace.c
-                fake_patched_ns=1
-              fi
-              if grep -qF 'if (vma->vm_end > last_vma_end)' ./fs/proc/task_mmu.c && ! grep -qF 'if (vma->vm_end > last_vma_end) {' ./fs/proc/task_mmu.c; then
-                echo "临时展开 last_vma_end if 块，修复匹配问题"
-                perl -i -0pe 's/\t\t\tif \(vma->vm_end > last_vma_end\)\n\t\t\t\tsmap_gather_stats\(vma, &mss, last_vma_end\);/\t\t\tif (vma->vm_end > last_vma_end) {\n\t\t\t\tsmap_gather_stats(vma, \&mss, last_vma_end);\n\t\t\t\tlast_vma_end = vma->vm_end;\n\t\t\t}/' ./fs/proc/task_mmu.c
-                fake_patched_expand=1
-              fi
-            fi
-            if [ "$KMI" = "android14-6.1" ]; then
-              if ! grep -qxF $'\tif (!vma_pages(vma))' ./fs/proc/task_mmu.c; then
-                echo "未找到 vma_pages，正在进行补丁修复"
-                fake_patched=1
-              fi
-              if ! grep -qxF '#include <linux/dma-buf.h>' ./fs/proc/base.c; then
-                echo "未找到 #include <linux/dma-buf.h>，添加缺失的头文件"
-                sed -i '/#include <linux\/cpufreq_times.h>/a #include <linux\/dma-buf.h>' ./fs/proc/base.c
-              fi
-            fi
-            if [ "$KMI" = "android12-5.10" ] || [ "$KMI" = "android13-5.15" ]; then
-              if ! grep -qxF $'\tif (!vma_pages(vma))' ./fs/proc/task_mmu.c; then
-                echo "未找到 vma_pages，正在进行补丁修复"
-                fake_patched=1
-              fi
-            fi
-            if [ "$KMI" = "android13-5.15" ]; then
-              if grep -qxF '#include <linux/swap_slots.h>' ./mm/memory.c && ! grep -qxF '#include <linux/susfs_def.h>' ./mm/memory.c; then
-                echo "发现干扰识别的 swap_slots.h，临时移除"
-                sed -i '/#include <linux\/swap_slots\.h>/d' ./mm/memory.c
-                fake_patched_dist=1
-              fi
-            fi
-
             echo "正在打susfs补丁"
             patch -p1 < 50_add_susfs_in_gki-${{ env.KANDROID_VERSION }}-${{ env.KERNEL_VERSION }}.patch || true
             echo "susfs_patch完成"
-
-            # Revert
-            if [ "$fake_patched" = 1 ]; then
-              if [ "$KMI" = "android15-6.6" ]; then
-                if grep -qxF $'\tunsigned int nr_subpages = __PAGE_SIZE / PAGE_SIZE;' ./fs/proc/task_mmu.c; then
-                  sed -i -e '/unsigned int nr_subpages \= __PAGE_SIZE \/ PAGE_SIZE;/d' -e '/pagemap_entry_t \*res = NULL;/d' ./fs/proc/task_mmu.c
-                fi
-              fi
-              if [ "$KMI" = "android12-5.10" ] || [ "$KMI" = "android13-5.15" ] || [ "$KMI" = "android14-6.1" ]; then
-                if grep -q 'goto[[:space:]]\+show_pad;' ./fs/proc/task_mmu.c; then
-                  sed -i -e 's/goto show_pad;/return 0;/' ./fs/proc/task_mmu.c
-                fi
-              fi
-            fi
-            if [ "$fake_patched_dist" = 1 ]; then
-              if [ "$KMI" = "android13-5.15" ]; then
-                if ! grep -qxF '#include <linux/swap_slots.h>' ./mm/memory.c; then
-                  sed -i '/#ifdef CONFIG_KSU_SUSFS_SUS_MAP/i #include <linux/swap_slots.h>' ./mm/memory.c
-                fi
-              fi
-            fi
-            if [ "$fake_patched_swap" = 1 ]; then
-              if [ "$KMI" = "android15-6.6" ]; then
-                if grep -qxF '#include <linux/zswap.h>' ./mm/memory.c; then
-                  sed -i '/#include <linux\/zswap\.h>/d' ./mm/memory.c
-                fi
-              fi
-            fi
-            if [ "$fake_patched_ns" = 1 ]; then
-              if grep -qxF '#include <trace/hooks/fs.h>' ./fs/namespace.c && ! grep -qxF 'susfs_def.h' ./fs/namespace.c; then
-                sed -i '/#include <trace\/hooks\/fs\.h>/d' ./fs/namespace.c
-              fi
-            fi
-            if [ "$fake_patched_expand" = 1 ]; then
-              if [ "$KMI" = "android15-6.6" ]; then
-                if grep -qF 'if (vma->vm_end > last_vma_end) {' ./fs/proc/task_mmu.c; then
-                  perl -i -0pe 's/\t\t\tif \(vma->vm_end > last_vma_end\) \{\n\t\t\t\tsmap_gather_stats\(vma, &mss, last_vma_end\);\n\t\t\t\tlast_vma_end = vma->vm_end;\n\t\t\t\}/\t\t\tif (vma->vm_end > last_vma_end)\n\t\t\t\tsmap_gather_stats(vma, \&mss, last_vma_end);/' ./fs/proc/task_mmu.c
-                fi
-              fi
-            fi
           fi
-
           source $REJ_CHECKER
           check_rejects .
 
+      - name: Revert Fake Patches
+        if: ${{ github.event.inputs.SUSFS_META != '-1' }}
+        run: |
+          cd kernel_workspace/kernel_platform/common
+          if [ "$KMI" = "android12-5.10" ]; then
+            if [ "$SUBLEVEL" -le "43" ]; then
+              echo "Reverting base.c Android 12 5.10 Fake Patch"
+              sed -i 's/^size_t this_len = min_t(size_t, count, PAGE_SIZE);$/int this_len = min_t(int, count, PAGE_SIZE);/' fs/proc/base.c
+            fi
+            if [ "$SUBLEVEL" -le "117" ]; then
+              echo "Reverting fdinfo.c Android 12 5.10 Fake Patch"
+              perl -i -pe 's/^(\s+if \(inode\) \{)/$1\n\t\t\/\*\n\t\t * IN_ALL_EVENTS represents all of the mask bits\n\t\t * that we expose to userspace.  There is at\n\t\t * least one bit (FS_EVENT_ON_CHILD) which is\n\t\t * used only internally to the kernel.\n\t\t *\/\n\t\tu32 mask = mark->mask & IN_ALL_EVENTS;/m' fs/notify/fdinfo.c
+              perl -i -pe 's/\binotify_mark_user_mask\(mark\)/mask, mark->ignored_mask/g' fs/notify/fdinfo.c
+              perl -i -pe 's/ignored_mask:0/ignored_mask:%x/g' fs/notify/fdinfo.c
+            fi
+          fi
+          if [ "$KMI" = "android13-5.15" ]; then
+            if [ "$SUBLEVEL" -le "41" ]; then
+              echo "Reverting namespace.c Android 13 5.15 Fake Patch"
+              sed -i '/#include <linux\/mnt_idmapping.h>$/d' fs/namespace.c
+              echo "Reverting open.c Android 13 5.15 Fake Patch"
+              sed -i '/#include <linux\/mnt_idmapping.h>$/d' fs/open.c
+              echo "Reverting fdinfo.c Android 13 5.15 Fake Patch"
+              perl -i -pe 's/^(\s+if \(inode\) \{)/$1\n\t\t\/\*\n\t\t * IN_ALL_EVENTS represents all of the mask bits\n\t\t * that we expose to userspace.  There is at\n\t\t * least one bit (FS_EVENT_ON_CHILD) which is\n\t\t * used only internally to the kernel.\n\t\t *\/\n\t\tu32 mask = mark->mask & IN_ALL_EVENTS;/m' fs/notify/fdinfo.c
+              perl -i -pe 's/\binotify_mark_user_mask\(mark\)/mask, mark->ignored_mask/g' fs/notify/fdinfo.c
+              perl -i -pe 's/ignored_mask:0/ignored_mask:%x/g' fs/notify/fdinfo.c
+              sed -i 's|i_uid_into_mnt(i_user_ns(&fi->inode), &fi->inode).val|i_uid_into_mnt(\&init_user_ns, \&fi->inode).val|g' fs/susfs.c
+              sed -i 's|i_uid_into_mnt(i_user_ns(inode), inode).val|i_uid_into_mnt(\&init_user_ns, inode).val|g' fs/susfs.c
+            fi
+            if [ "$SUBLEVEL" -ge "123" ]; then
+              echo "Reverting memory.c Android 13 5.15 Fake Patch"
+              sed -i '/#ifdef CONFIG_KSU_SUSFS_SUS_MAP/i #include <linux/swap_slots.h>' ./mm/memory.c
+            fi
+            if [ "$SUBLEVEL" -ge "197" ]; then
+              echo "Reverting namespace.c Android 13 5.15 Fake Patch"
+              sed -i '/^#include "internal.h"$/a #include <trace/hooks/blk.h>' fs/namespace.c
+            fi
+            if [ "$SUBLEVEL" -ge "206" ]; then
+              echo "Reverting task_mmu.c Android 13 5.15 Fake Patch"
+              sed -i '/^#include <linux\/pkeys.h>$/a #include <trace/hooks/mm.h>' fs/proc/task_mmu.c
+            fi
+          fi
+          if [ "$KMI" = "android14-6.1" ]; then
+            if [ "$SUBLEVEL" -le "141" ]; then
+              echo "Reverting base.c Android 14 6.1 Fake Patch"
+              sed -i '/^#include <linux\/dma-buf.h>$/d' fs/proc/base.c
+            fi
+            if [ "$SUBLEVEL" -ge "157" ]; then
+              echo "Reverting namespace.c Android 14 6.1 Fake Patch"
+              sed -i '/^#include "internal.h"$/a #include <trace/hooks/blk.h>' fs/namespace.c
+            fi
+          fi
+          if [ "$KMI" = "android15-6.6" ]; then
+            if [ "$SUBLEVEL" -le "30" ]; then
+              echo "Reverting taskmmu.c、namespace.c Android 15 6.6 Fake Patch"
+              sed -i '/#include <trace\/hooks\/fs\.h>/d' ./fs/namespace.c
+              sed -i -e '/unsigned int nr_subpages \= __PAGE_SIZE \/ PAGE_SIZE;/d' -e '/pagemap_entry_t \*res = NULL;/d' ./fs/proc/task_mmu.c
+            fi
+            if [ "$SUBLEVEL" -le "57" ]; then
+              echo "Reverting memory.c Android 15 6.6 Fake Patch"
+              sed -i '/^#include <linux\/zswap.h>$/d' mm/memory.c
+            fi
+            if [ "$SUBLEVEL" -le "92" ]; then
+              echo "Reverting base.c Android 15 6.6 Fake Patch"
+              sed -i '/^#include <linux\/dma-buf.h>$/d' fs/proc/base.c
+            fi
+          fi
+          if [ "$KMI" = "android16-6.12" ]; then
+            if [ "$SUBLEVEL" -ge "58" ]; then
+              echo "Reverting exec.c Android 16 6.12 Fake Patch"
+              sed -i '/^#include /a #include <linux/dma-buf.h>' fs/exec.c
+            fi
+          fi
+
       # OGKI转换GKI，无需修改 dtbo 开机
       - name: Apply Convert HMBIRD_OGKI to HMBIRD_GKI
-        if: ${{ fromJSON(env.KV1) >= 6 && fromJSON(env.KV2) >= 66 && github.event.inputs.SCHED_HMBIRD == 'false' }}
+        if: ${{ (fromJSON(env.VERSIONLEVEL) > 6 || (fromJSON(env.VERSIONLEVEL) == 6 && fromJSON(env.PATCHLEVEL) >= 6)) && github.event.inputs.SCHED_HMBIRD == 'false' }}
         run: |
           PATCH_DIR="${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/patches"
           cd kernel_workspace/kernel_platform/common
@@ -1024,7 +1068,7 @@ jobs:
         run: |
           PATCH_DIR="${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/patches"
           cd kernel_workspace/kernel_platform/common
-          if [ "$KV1" -lt 6 ]; then
+          if [ "$VERSIONLEVEL" -lt 6 ]; then
             patch -p1 --forward < "${PATCH_DIR}/unicode_bypass_fix_6.1-.patch" || true
           else
             patch -p1 --forward < "${PATCH_DIR}/unicode_bypass_fix_6.1+.patch" || true
@@ -1040,8 +1084,7 @@ jobs:
           sed -i '/endmenu/i source "drivers/rekernel/Kconfig"' drivers/Kconfig
           sed -i '$a \#Re-Kernel Support\nobj-$(CONFIG_REKERNEL) += rekernel/' drivers/Makefile
           mkdir -p drivers/rekernel
-          cp ${RE_DIR}/rekernel.c ${RE_DIR}/rekernel.h ${RE_DIR}/Makefile ${RE_DIR}/Kconfig drivers/rekernel/
-          sed -i "s|^\s*//\s*#define KERNEL_${KERNEL_SHORT_PATCH_VERSION}|\#define KERNEL_${KERNEL_SHORT_PATCH_VERSION}|" drivers/rekernel/rekernel.h
+          cp -r "${RE_DIR}"/* drivers/rekernel/
 
       - name: Apply DROID_SPACES
         env:
@@ -1178,7 +1221,6 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform/common
           CONFIG_FILE=./arch/arm64/configs/gki_defconfig
-          KERNEL_VERSION="${{ env.KERNEL_VERSION }}"
 
           set_config() {
             local val="$1"
@@ -1357,7 +1399,6 @@ jobs:
         if: ${{ github.event.inputs.FAST_BUILD == 'true' }}
         id: fast_build
         run: |
-          KERNEL_VERSION="${{ env.KERNEL_VERSION }}"
           cd kernel_workspace/kernel_platform
 
           # 自动检测 LLVM_IAS
@@ -1676,7 +1717,7 @@ jobs:
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v7
         with:
-          name: AnyKernel3_SukiSUUltra_${{ env.KSUVER }}_${{ steps.extract_info.outputs.value }}(${{ env.TKERNEL_VERSION }})${{ steps.suffix.outputs.value }}
+          name: AnyKernel3_SukiSUUltra_${{ env.KSUVER }}_${{ steps.extract_info.outputs.value }}(${{ env.CKERNEL_VERSION }})${{ steps.suffix.outputs.value }}
           path: ./AnyKernel3/*
 
       - name: Extract and Process ZRAM Module
