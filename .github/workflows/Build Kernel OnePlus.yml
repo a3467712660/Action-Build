@@ -10,7 +10,7 @@ on:
         options:
           - oneplus_nord_n30_se_5g_v
           - oneplus_10r_v
-          - oneplus_nord_3_v
+          - oneplus_nord_3_b
           - oneplus_ace_v
           - oneplus_ace_race_v
           - oneplus_10_pro_b
@@ -18,7 +18,6 @@ on:
           - oneplus_11r_b
           - oneplus_ace2_b
           - oneplus_pad_lite_b
-          - oneplus_pad_lite_Canary_b
           - oneplus_pad_mt6983_b
           - oneplus_ace_2v_b
           - oneplus_ace_pro_v
@@ -30,6 +29,7 @@ on:
           - oneplus_nord_ce4_b
           - oneplus_12_b
           - oneplus_pad_go_2_b
+          - oneplus_turbo_6x_b
           - oneplus_nord_ce4_lite_5g_b
           - oneplus_nord_ce6_lite_b
           - oneplus_turbo_6v
@@ -56,29 +56,12 @@ on:
           - oneplus_turbo_6
           - oneplus_nord_6
           - oneplus_ace_6t
-          - oneplus_ace_6t_Canary
           - oneplus_15r
-          - oneplus_15r_Canary
           - oneplus_15
-          - oneplus_15_Canary
           - oneplus_15t
-          - oneplus_15t_Canary
           - oneplus_pad_3_pro
-          - oneplus_pad_3_pro_Canary
           - oneplus_pad_4
-          - oneplus_pad_4_Canary
           - oneplus_ace6_ultra
-          - oneplus_ace6_ultra_Canary
-      MANAGER_SOURCE:
-        type: choice
-        description: "管理器调用方向//Manager download source"
-        required: true
-        default: MIUIX
-        options:
-          - MIUIX
-          - MIUIX_SPOOF
-          - MD3
-          - MD3_SPOOF
       SUSFS_CI:
         type: choice
         description: "SUSFS模块下载调用方向//SUSFS module branch"
@@ -114,9 +97,9 @@ on:
         default: "Fri Dec 12 11:37:03 UTC 2025"
       KSU_META:
         type: string
-        description: "分支名(必填)/自定义版本标识(留空不修改)/回退分支提交哈希版本(留空不修改)//Branch name (Required) / Custom version identifier (Leave blank to not modify) / Rollback branch commit hash version (Leave blank to not modify)"
+        description: "管理器分支名(必填)/内置分支名(必填)/自定义版本标识(留空不修改)/回退分支提交哈希版本(留空不修改)//Manager Branch name (Required) / Builtin branch name (Required) / Custom version identifier (Leave blank to not modify) / Rollback branch commit hash version (Leave blank to not modify)"
         required: false
-        default: "builtin/Numbersf/"
+        default: "main/builtin/Numbersf/"
       LZ4_UPDATE:
         type: boolean
         description: "是否升级LZ4到上游最新？//Upgrade LZ4 to the latest upstream?"
@@ -216,6 +199,13 @@ jobs:
           remove-android: 'true'
           remove-haskell: 'true'
           remove-codeql: 'true'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Numbersf"
+          git config --global user.email "263623064@qq.com"
+          mkdir kernel_workspace && cd kernel_workspace
+          git clone https://github.com/Numbersf/Action-Build.git -b SukiSU-Ultra
 
       - name: Extract Manifest Info
         id: extract_info
@@ -328,6 +318,9 @@ jobs:
           echo "value=${FILE_BASE}_Android${ANDROID_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Debug Show Selected Inputs
+        env:
+          BUILD_TIME: ${{ github.event.inputs.BUILD_TIME }}
+          SUFFIX: ${{ github.event.inputs.SUFFIX }}
         run: |
           echo "------------------------------"
 
@@ -336,7 +329,6 @@ jobs:
           echo "Selected ANDROID_VERSION: ${{ env.ANDROID_VERSION }}"
           echo "Selected BUILD_METHOD: ${{ env.BUILD_METHOD }}"
           echo "Selected FILE: ${{ github.event.inputs.FILE }}"
-          echo "Selected MANAGER_SOURCE: ${{ github.event.inputs.MANAGER_SOURCE }}"
           echo "Selected SUSFS_CI: ${{ github.event.inputs.SUSFS_CI }}"
           if [ "${{ github.event.inputs.SUSFS_CI }}" != "N/A" ]; then
             echo "::warning title=SUSFS Not Required::当前管理器已自带附加模块，无需启用 SUSFS 模块，强制启用可能导致不开机。"
@@ -355,67 +347,12 @@ jobs:
           echo "Selected DROID_SPACES: ${{ github.event.inputs.DROID_SPACES }}"
           echo "Selected RE_KERNEL: ${{ github.event.inputs.RE_KERNEL }}"
           echo "Selected LZ4_UPDATE: ${{ github.event.inputs.LZ4_UPDATE }}"
-
-          BUILD_TIME="${{ github.event.inputs.BUILD_TIME }}"
-          SUFFIX="${{ github.event.inputs.SUFFIX }}"
-
-          # BUILD_TIME
           echo "Custom BUILD_TIME: $BUILD_TIME"
           echo -n "BUILD_TIME Unicode: "
-          python3 - <<EOF
-          import unicodedata, re
-          s = """$BUILD_TIME"""
-          warn = False
-          out = []
-          space_count = 0
-          for c in s:
-              if c == ' ':
-                  space_count += 1
-                  # 前两个空格允许，之后标红
-                  if space_count <= 2:
-                      out.append(f'U+{ord(c):04X} ')
-                  else:
-                      warn = True
-                      out.append(f'\033[31mU+{ord(c):04X}\033[0m ')
-                  continue
-              else:
-                  space_count = 0
-              if unicodedata.category(c) == 'Cf' or (c.isspace() and c != ' '):
-                  warn = True
-                  out.append(f'\033[31mU+{ord(c):04X}\033[0m ')
-              else:
-                  out.append(f'U+{ord(c):04X} ')
-          print(''.join(out))
-          # 异常字符警告
-          if warn:
-              print("::warning title=BUILD_TIME Error::检测到自定义构建时间异常符号调用，请注意!")
-          EOF
-
-          # SUFFIX
+          CHECK_TEXT="$BUILD_TIME" python3 "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/check_unicode_format.py" --mode build_time
           echo "Custom SUFFIX: $SUFFIX"
           echo -n "SUFFIX Unicode: "
-          python3 - <<EOF
-          import unicodedata, re
-          s = """$SUFFIX"""
-          warn = False
-          out = []
-          for c in s:
-              if c.isspace() or unicodedata.category(c) == 'Cf':
-                  warn = True
-                  out.append(f'\033[31mU+{ord(c):04X}\033[0m ')
-              else:
-                  out.append(f'U+{ord(c):04X} ')
-          print(''.join(out))
-
-          # 异常字符警告
-          if warn:
-              print("::warning title=SUFFIX Error::检测到自定义内核后缀异常符号调用，请注意!")
-          # 格式重复检测
-          if re.search(r'^\d{1,3}\.\d{1,3}\.\d{1,3}|-?android\d{2,3}-', s):
-              print("::warning title=SUFFIX Format Error::检测到自定义内核后缀存在重复或冗余内容调用，请注意!")
-          EOF
-
-          echo "------------------------------"
+          CHECK_TEXT="$SUFFIX" python3 "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/check_unicode_format.py" --mode suffix
 
       - name: Check Disk Space
         run: df -h
@@ -436,13 +373,6 @@ jobs:
           mkdir -p "$HOME/.ccache_${{ github.event.inputs.FILE }}"
           echo "set: $HOME/.ccache_${{ github.event.inputs.FILE }}"
 
-      - name: Configure Git
-        run: |
-          git config --global user.name "Numbersf"
-          git config --global user.email "263623064@qq.com"
-          mkdir kernel_workspace && cd kernel_workspace
-          git clone https://github.com/Numbersf/Action-Build.git -b SukiSU-Ultra
-
       - name: Fork Check
         run: |
           repo="${{ github.repository }}"; json=$(curl -s "https://api.github.com/repos/$repo")
@@ -453,43 +383,21 @@ jobs:
 
       - name: Reject Check
         run: |
-          cat > /tmp/check_rejects.sh << 'EOF'
-          check_rejects() {
-            local SEARCH_DIR="${1:-.}"
-            REJECT_FILES=$(find "$SEARCH_DIR" -name "*.rej" 2>/dev/null)
-            if [ -z "$REJECT_FILES" ]; then
-              return 0
-            fi
-            while IFS= read -r REJ_FILE; do
-              ORIG_FILE="${REJ_FILE%.rej}"
-              ORIG_FILE="${ORIG_FILE#./}"
-              echo "::group::❌ 补丁在 ${ORIG_FILE} 出现 hunk FAILED，点击查看具体信息"
-              cat "$REJ_FILE"
-              echo "::endgroup::"
-            done <<< "$REJECT_FILES"
-          }
-          EOF
-          chmod +x /tmp/check_rejects.sh
-          echo "REJ_CHECKER=/tmp/check_rejects.sh" >> $GITHUB_ENV
+          REJ_CHECKER="$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/check_rejects.sh"
+          chmod +x "$REJ_CHECKER"
+          echo "REJ_CHECKER=$REJ_CHECKER" >> $GITHUB_ENV
 
       - name: Restore APT Cache
         id: apt-cache
         uses: actions/cache@v5
         with:
-          path: ~/apt-cache-debs
-          key: apt-cache-${{ runner.os }}-${{ github.ref_name }}-v3
+          path: ~/.apt-pkg-cache
+          key: apt-cache-${{ runner.os }}-${{ github.ref_name }}-v5
 
       - name: Install Dependencies
         run: |
-          mkdir -p ~/apt-cache-debs
-          if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
-            sudo apt-get update
-          else
-            echo "✅ APT 缓存命中，跳过 apt-get update"
-          fi
-          sudo apt-get install -y --no-install-recommends -o Dir::Cache::Archives="$HOME/apt-cache-debs" python3 git curl libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync unzip gawk dos2unix kmod libdw-dev elfutils dwarves
-          sudo rm -f ~/apt-cache-debs/lock
-          sudo rm -rf ~/apt-cache-debs/partial
+          export APT_PACKAGES="python3 git curl libelf-dev build-essential flex bison libssl-dev libncurses-dev liblz4-tool zlib1g-dev libxml2-utils rsync unzip gawk dos2unix kmod libdw-dev elfutils dwarves kotlin"
+          bash "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/cache_apt_pkgs.sh" ~/.apt-pkg-cache
 
       - name: Install Ccache-ECS
         run: |
@@ -548,6 +456,7 @@ jobs:
 
           echo "使用$MANIFEST_REPO/$MANIFEST_REPO_NAME($MANIFEST_BRANCH)初始化仓库..."
           repo init -u "$BASE_URL" -b "$MANIFEST_BRANCH" -m "${FILE}.xml" --depth=1 --no-clone-bundle --no-tags
+          sed -i -e '/prebuilts\/asuite"/{/ks-kernel\.lnx\.5\.0\.r3-rel/d}' -e '/tools\/tradefederation\/prebuilts"/{/ks-kernel\.lnx\.5\.0\.r3-rel/d}' ".repo/manifests/${FILE}.xml"
           repo sync -c -j$(nproc) --no-clone-bundle --no-tags --force-sync
 
           KERNEL_REPOS=""
@@ -729,58 +638,30 @@ jobs:
             chmod +x "$f"
           done
 
-      - name: Resolve Manager Source
-        id: manager
-        run: |
-          MANAGER_SOURCE="${{ github.event.inputs.MANAGER_SOURCE }}"
-
-          case "$MANAGER_SOURCE" in
-            MD3)
-              BRANCH="old"
-              ARTIFACT="manager"
-              ;;
-            MD3_SPOOF)
-              BRANCH="old"
-              ARTIFACT="Spoofed-Manager"
-              ;;
-            MIUIX_SPOOF)
-              BRANCH="main"
-              ARTIFACT="Spoofed-Manager"
-              ;;
-            MIUIX|*)
-              BRANCH="main"
-              ARTIFACT="manager"
-              ;;
-          esac
-
-          echo "manager_branch=$BRANCH" >> "$GITHUB_OUTPUT"
-          echo "manager_artifact=$ARTIFACT" >> "$GITHUB_OUTPUT"
-
       - name: Add SukiSU Ultra
         run: |
           cd kernel_workspace/kernel_platform
-          MANAGER_BRANCH="${{ steps.manager.outputs.manager_branch }}"
           KSU_META="${{ github.event.inputs.KSU_META }}"
 
-          # 必须包含两个分隔符（至少三个字段）
-          if [[ "$(grep -o '/' <<< "$KSU_META" | wc -l)" -lt 2 ]]; then
-            echo "错误: KSU_META 参数缺少必要的分隔符 '/'，格式应为: 分支名/自定义标识(可省略)/提交hash(可省略)"
+          # 必须包含两个分隔符（至少四个字段）
+          if [[ "$(grep -o '/' <<< "$KSU_META" | wc -l)" -lt 3 ]]; then
+            echo "错误: KSU_META 参数缺少必要的分隔符 '/'，格式应为: 管理器分支名/内置分支名/自定义标识(可省略)/提交hash(可省略)"
             exit 10
           fi
 
           # 解析字段：分支 / 自定义标识 / 手动 hash
-          IFS='/' read -r BRANCH_NAME CUSTOM_TAG MANUAL_HASH <<< "$KSU_META"
-
-          echo "分支名: $BRANCH_NAME"
-          [[ -n "$CUSTOM_TAG" ]] && echo "自定义版本标识: $CUSTOM_TAG" || echo "自定义版本标识: 未启用"
+          IFS='/' read -r KSU_MANAGER_BRANCH KSU_BUILTIN_BRANCH KSU_CUSTOM_TAG MANUAL_HASH <<< "$KSU_META"
+          echo "KSU_MANAGER_BRANCH=$KSU_MANAGER_BRANCH" >> $GITHUB_ENV
+          echo "KSU_BUILTIN_BRANCH=$KSU_BUILTIN_BRANCH" >> $GITHUB_ENV
+          [[ -n "$KSU_CUSTOM_TAG" ]] && echo "自定义版本标识: $KSU_CUSTOM_TAG" || echo "自定义版本标识: 未启用"
           [[ -n "$MANUAL_HASH" ]] && echo "手动指定 hash: $MANUAL_HASH" || echo "手动指定 hash: 未启用"
 
-          curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/${MANAGER_BRANCH}/kernel/setup.sh" | bash -s "$BRANCH_NAME"
+          curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/${KSU_MANAGER_BRANCH}/kernel/setup.sh" | bash -s "$KSU_BUILTIN_BRANCH"
           cd ./KernelSU
 
           # 如果指定了手动 hash，就切换到该提交
           if [[ -n "$MANUAL_HASH" ]]; then
-            git fetch origin "$BRANCH_NAME" --depth=50
+            git fetch origin "$KSU_BUILTIN_BRANCH" --depth=50
             git checkout "$MANUAL_HASH"
             SHORT_HASH=${MANUAL_HASH:0:8}
           fi
@@ -801,10 +682,10 @@ jobs:
           else
             USE_HASH="$GIT_HASH"
           fi
-          if [[ -z "$CUSTOM_TAG" ]]; then
-            VERSION_FULL="v$KSU_VERSION_TAG-$USE_HASH@$BRANCH_NAME"
+          if [[ -z "$KSU_CUSTOM_TAG" ]]; then
+            VERSION_FULL="v$KSU_VERSION_TAG-$USE_HASH@$KSU_BUILTIN_BRANCH"
           else
-            VERSION_FULL="v$KSU_VERSION_TAG-$CUSTOM_TAG@$BRANCH_NAME[$USE_HASH]"
+            VERSION_FULL="v$KSU_VERSION_TAG-$KSU_CUSTOM_TAG@$KSU_BUILTIN_BRANCH[$USE_HASH]"
           fi
 
           ESC_VERSION_FULL=$(printf '%s' "$VERSION_FULL" | sed 's/[&|\\/]/\\&/g')
@@ -829,7 +710,7 @@ jobs:
             sed -i "s|^KSU_VERSION_API := .*|KSU_VERSION_API := $ESC_KSU_VERSION_TAG|" kernel/Makefile
           fi
 
-          KSU_VERSION=$(expr $(git rev-list --count "$MANAGER_BRANCH" 2>/dev/null || echo 13000) + 37185)
+          KSU_VERSION=$(expr $(git rev-list --count "$KSU_MANAGER_BRANCH" 2>/dev/null || echo 13000) + 37185)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
 
           echo "::group::最终 Makefile 中版本信息及部分调试结果预览"
@@ -839,76 +720,7 @@ jobs:
       - name: Apply Fake Patches
         if: ${{ github.event.inputs.SUSFS_META != '-1' }}
         run: |
-          cd kernel_workspace/kernel_platform/common
-          if [ "$KMI" = "android12-5.10" ]; then
-            if [ "$SUBLEVEL" -le "43" ]; then
-              echo "Applying base.c Android 12 5.10 Fake Patch"
-              perl -i -pe 's/(int|size_t)\s+this_len\s*=\s*min_t\s*\(\s*\1\s*,/size_t this_len = min_t(size_t,/;' fs/proc/base.c
-            fi
-            if [ "$SUBLEVEL" -le "117" ]; then
-              echo "Applying fdinfo.c Android 12 5.10 Fake Patch"
-              sed -i '/^[[:space:]]*\/\*$/,/^[[:space:]]*u32 mask = mark->mask & IN_ALL_EVENTS;$/d' fs/notify/fdinfo.c
-              perl -i -pe 's/\bmask,\s*mark->ignored_mask/inotify_mark_user_mask(mark)/g' fs/notify/fdinfo.c
-              perl -i -pe 's/ignored_mask:%x/ignored_mask:0/g' fs/notify/fdinfo.c
-            fi
-          fi
-          if [ "$KMI" = "android13-5.15" ]; then
-            if [ "$SUBLEVEL" -le "41" ]; then
-              echo "Applying namespace.c Android 13 5.15 SUSFS fixes"
-              sed -i '/^#include <linux\/shmem_fs.h>$/a #include <linux/mnt_idmapping.h>' fs/namespace.c
-              echo "Applying open.c Android 13 5.15 Fake Patch"
-              sed -i '/^#include <linux\/compat.h>$/a #include <linux/mnt_idmapping.h>' fs/open.c
-              echo "Applying fdinfo.c Android 13 5.15 Fake Patch"
-              sed -i '/^[[:space:]]*\/\*$/,/^[[:space:]]*u32 mask = mark->mask & IN_ALL_EVENTS;$/d' fs/notify/fdinfo.c
-              perl -i -pe 's/\bmask,\s*mark->ignored_mask/inotify_mark_user_mask(mark)/g' fs/notify/fdinfo.c
-              perl -i -pe 's/ignored_mask:%x/ignored_mask:0/g' fs/notify/fdinfo.c
-            fi
-            if [ "$SUBLEVEL" -ge "123" ]; then
-              echo "Applying memory.c Android 13 5.15 Fake Patch"
-              sed -i '/#include <linux\/swap_slots\.h>/d' ./mm/memory.c
-            fi
-            if [ "$SUBLEVEL" -ge "197" ]; then
-              echo "Applying namespace.c Android 13 5.15 Fake Patch"
-              sed -i '/^#include <trace\/hooks\/blk.h>$/d' fs/namespace.c
-            fi
-            if [ "$SUBLEVEL" -ge "206" ]; then
-              echo "Applying task_mmu.c Android 13 5.15 Fake Patch"
-              sed -i '/^#include <trace\/hooks\/mm.h>$/d' fs/proc/task_mmu.c
-            fi
-          fi
-          if [ "$KMI" = "android14-6.1" ]; then
-            if [ "$SUBLEVEL" -le "141" ]; then
-              echo "Applying base.c Android 14 6.1 Fake Patch"
-              sed -i '/^#include <linux\/cpufreq_times.h>$/a #include <linux/dma-buf.h>' fs/proc/base.c
-            fi
-            if [ "$SUBLEVEL" -ge "157" ]; then
-              echo "Applying namespace.c Android 14 6.1 Fake Patch"
-              sed -i '/^#include <trace\/hooks\/blk.h>$/d' fs/namespace.c
-            fi
-          fi
-          if [ "$KMI" = "android15-6.6" ]; then
-            if [ "$SUBLEVEL" -le "30" ]; then
-              echo "Applying taskmmu.c、namespace.c Android 15 6.6 Fake Patch"
-              sed -i '/smap_gather_stats(vma, &mss, last_vma_end);/a\last_vma_end = vma->vm_end;' fs/proc/task_mmu.c
-              perl -0777 -i -pe '@l=split/\n/;for($i=$#l;$i>=0;$i--){if($l[$i]=~/last_vma_end = vma->vm_end;/){$l[$i]="\t\t\t\t".$l[$i];splice(@l,$i+1,0,"\t\t\t}");for($j=$i;$j>=0;$j--){if($l[$j]=~/if\s*\(vma->vm_end > last_vma_end\)/){$l[$j]=~s/\)\s*$/) {/;last}}last}}$_=join"\n",@l' fs/proc/task_mmu.c
-              sed -i '/#include <trace\/hooks\/blk\.h>/a #include <trace\/hooks\/fs.h>' ./fs/namespace.c
-              sed -i -e '/int ret = 0, copied = 0;/a \\tunsigned int nr_subpages \= __PAGE_SIZE \/ PAGE_SIZE;' -e '/int ret = 0, copied = 0;/a \\tpagemap_entry_t \*res = NULL;' ./fs/proc/task_mmu.c
-            fi
-            if [ "$SUBLEVEL" -le "57" ]; then
-              echo "Applying memory.c Android 15 6.6 Fake Patch"
-              sed -i '/^#include <linux\/sched\/sysctl.h>$/a #include <linux/zswap.h>' mm/memory.c
-            fi
-            if [ "$SUBLEVEL" -le "92" ]; then
-              echo "Applying base.c Android 15 6.6 Fake Patch"
-              sed -i '/^#include <linux\/cpufreq_times.h>$/a #include <linux/dma-buf.h>' fs/proc/base.c
-            fi
-          fi
-          if [ "$KMI" = "android16-6.12" ]; then
-            if [ "$SUBLEVEL" -ge "58" ]; then
-              echo "Applying exec.c Android 16 6.12 Fake Patch"
-              sed -i '/^#include <linux\/dma-buf.h>$/d' fs/exec.c
-            fi
-          fi
+          kotlinc -script "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" apply "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common"
 
       - name: Apply Patches SukiSU Ultra
         env:
@@ -973,76 +785,7 @@ jobs:
       - name: Revert Fake Patches
         if: ${{ github.event.inputs.SUSFS_META != '-1' }}
         run: |
-          cd kernel_workspace/kernel_platform/common
-          if [ "$KMI" = "android12-5.10" ]; then
-            if [ "$SUBLEVEL" -le "43" ]; then
-              echo "Reverting base.c Android 12 5.10 Fake Patch"
-              sed -i 's/^size_t this_len = min_t(size_t, count, PAGE_SIZE);$/int this_len = min_t(int, count, PAGE_SIZE);/' fs/proc/base.c
-            fi
-            if [ "$SUBLEVEL" -le "117" ]; then
-              echo "Reverting fdinfo.c Android 12 5.10 Fake Patch"
-              perl -i -pe 's/^(\s+if \(inode\) \{)/$1\n\t\t\/\*\n\t\t * IN_ALL_EVENTS represents all of the mask bits\n\t\t * that we expose to userspace.  There is at\n\t\t * least one bit (FS_EVENT_ON_CHILD) which is\n\t\t * used only internally to the kernel.\n\t\t *\/\n\t\tu32 mask = mark->mask & IN_ALL_EVENTS;/m' fs/notify/fdinfo.c
-              perl -i -pe 's/\binotify_mark_user_mask\(mark\)/mask, mark->ignored_mask/g' fs/notify/fdinfo.c
-              perl -i -pe 's/ignored_mask:0/ignored_mask:%x/g' fs/notify/fdinfo.c
-            fi
-          fi
-          if [ "$KMI" = "android13-5.15" ]; then
-            if [ "$SUBLEVEL" -le "41" ]; then
-              echo "Reverting namespace.c Android 13 5.15 Fake Patch"
-              sed -i '/#include <linux\/mnt_idmapping.h>$/d' fs/namespace.c
-              echo "Reverting open.c Android 13 5.15 Fake Patch"
-              sed -i '/#include <linux\/mnt_idmapping.h>$/d' fs/open.c
-              echo "Reverting fdinfo.c Android 13 5.15 Fake Patch"
-              perl -i -pe 's/^(\s+if \(inode\) \{)/$1\n\t\t\/\*\n\t\t * IN_ALL_EVENTS represents all of the mask bits\n\t\t * that we expose to userspace.  There is at\n\t\t * least one bit (FS_EVENT_ON_CHILD) which is\n\t\t * used only internally to the kernel.\n\t\t *\/\n\t\tu32 mask = mark->mask & IN_ALL_EVENTS;/m' fs/notify/fdinfo.c
-              perl -i -pe 's/\binotify_mark_user_mask\(mark\)/mask, mark->ignored_mask/g' fs/notify/fdinfo.c
-              perl -i -pe 's/ignored_mask:0/ignored_mask:%x/g' fs/notify/fdinfo.c
-              sed -i 's|i_uid_into_mnt(i_user_ns(&fi->inode), &fi->inode).val|i_uid_into_mnt(\&init_user_ns, \&fi->inode).val|g' fs/susfs.c
-              sed -i 's|i_uid_into_mnt(i_user_ns(inode), inode).val|i_uid_into_mnt(\&init_user_ns, inode).val|g' fs/susfs.c
-            fi
-            if [ "$SUBLEVEL" -ge "123" ]; then
-              echo "Reverting memory.c Android 13 5.15 Fake Patch"
-              sed -i '/#ifdef CONFIG_KSU_SUSFS_SUS_MAP/i #include <linux/swap_slots.h>' ./mm/memory.c
-            fi
-            if [ "$SUBLEVEL" -ge "197" ]; then
-              echo "Reverting namespace.c Android 13 5.15 Fake Patch"
-              sed -i '/^#include "internal.h"$/a #include <trace/hooks/blk.h>' fs/namespace.c
-            fi
-            if [ "$SUBLEVEL" -ge "206" ]; then
-              echo "Reverting task_mmu.c Android 13 5.15 Fake Patch"
-              sed -i '/^#include <linux\/pkeys.h>$/a #include <trace/hooks/mm.h>' fs/proc/task_mmu.c
-            fi
-          fi
-          if [ "$KMI" = "android14-6.1" ]; then
-            if [ "$SUBLEVEL" -le "141" ]; then
-              echo "Reverting base.c Android 14 6.1 Fake Patch"
-              sed -i '/^#include <linux\/dma-buf.h>$/d' fs/proc/base.c
-            fi
-            if [ "$SUBLEVEL" -ge "157" ]; then
-              echo "Reverting namespace.c Android 14 6.1 Fake Patch"
-              sed -i '/^#include "internal.h"$/a #include <trace/hooks/blk.h>' fs/namespace.c
-            fi
-          fi
-          if [ "$KMI" = "android15-6.6" ]; then
-            if [ "$SUBLEVEL" -le "30" ]; then
-              echo "Reverting taskmmu.c、namespace.c Android 15 6.6 Fake Patch"
-              sed -i '/#include <trace\/hooks\/fs\.h>/d' ./fs/namespace.c
-              sed -i -e '/unsigned int nr_subpages \= __PAGE_SIZE \/ PAGE_SIZE;/d' -e '/pagemap_entry_t \*res = NULL;/d' ./fs/proc/task_mmu.c
-            fi
-            if [ "$SUBLEVEL" -le "57" ]; then
-              echo "Reverting memory.c Android 15 6.6 Fake Patch"
-              sed -i '/^#include <linux\/zswap.h>$/d' mm/memory.c
-            fi
-            if [ "$SUBLEVEL" -le "92" ]; then
-              echo "Reverting base.c Android 15 6.6 Fake Patch"
-              sed -i '/^#include <linux\/dma-buf.h>$/d' fs/proc/base.c
-            fi
-          fi
-          if [ "$KMI" = "android16-6.12" ]; then
-            if [ "$SUBLEVEL" -ge "58" ]; then
-              echo "Reverting exec.c Android 16 6.12 Fake Patch"
-              sed -i '/^#include /a #include <linux/dma-buf.h>' fs/exec.c
-            fi
-          fi
+          kotlinc -script "$GITHUB_WORKSPACE/kernel_workspace/Action-Build/scripts/PatchFakePatches.kts" revert "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/common"
 
       # OGKI转换GKI，无需修改 dtbo 开机
       - name: Apply Convert HMBIRD_OGKI to HMBIRD_GKI
@@ -1085,6 +828,9 @@ jobs:
           sed -i '$a \#Re-Kernel Support\nobj-$(CONFIG_REKERNEL) += rekernel/' drivers/Makefile
           mkdir -p drivers/rekernel
           cp -r "${RE_DIR}"/* drivers/rekernel/
+          if [ -f BUILD.bazel ]; then
+            sed -i '/"kernel_aarch64": {/,/"kernel_aarch64_16k": {/ s|"module_implicit_outs": get_gki_modules_list("arm64")|"module_implicit_outs": get_gki_modules_list("arm64") + ["drivers/rekernel/rekernel.ko"]|' BUILD.bazel
+          fi
 
       - name: Apply DROID_SPACES
         env:
@@ -1221,6 +967,9 @@ jobs:
         run: |
           cd kernel_workspace/kernel_platform/common
           CONFIG_FILE=./arch/arm64/configs/gki_defconfig
+          MAKEFILE=./kernel/Makefile
+
+          declare -a HIDE_CONFIGS=()
 
           set_config() {
             local val="$1"
@@ -1234,6 +983,29 @@ jobs:
               printf '%s\n' "$val" >> "$CONFIG_FILE"
             fi
           }
+
+          set_hide_config() {
+            local val="$1"
+            local key="${val%%=*}"
+            set_config "$val"
+            HIDE_CONFIGS+=("$key")
+          }
+
+          inject_fake_config() {
+            [ "${#HIDE_CONFIGS[@]}" -eq 0 ] && return 0
+            local marker="# --- fake_config injector ---"
+            if ! grep -qF "$marker" "$MAKEFILE"; then
+              {
+                printf '\n%s\n' "$marker"
+                printf 'ifneq ($(strip $(CONFIG_FAKE_DISABLE)),)\n'
+                printf '$(obj)/config_data: $(KCONFIG_CONFIG) FORCE\n'
+                printf '\t$(Q)sed $(foreach opt,$(CONFIG_FAKE_DISABLE),-e '"'"'s|^$(opt)=.*|# $(opt) is not set|'"'"') $(KCONFIG_CONFIG) > $@\n'
+                printf 'endif\n'
+              } >> "$MAKEFILE"
+            fi
+            echo "CONFIG_FAKE_DISABLE=${HIDE_CONFIGS[*]}" >> "$GITHUB_ENV"
+          }
+          trap 'inject_fake_config' EXIT
 
           # SukiSU Ultra配置
           set_config "CONFIG_KSU=y"
@@ -1268,7 +1040,7 @@ jobs:
 
           # BBR & ECN配置*
           if [ "${{ github.event.inputs.CCM }}" = "true" ]; then
-            set_config "CONFIG_TCP_CONG_ADVANCED=y"
+            set_hide_config "CONFIG_TCP_CONG_ADVANCED=y"
             set_config "CONFIG_TCP_CONG_BBR=y"
             set_config "CONFIG_NET_SCH_FQ=y"
             set_config "CONFIG_TCP_CONG_BIC=n"
@@ -1315,7 +1087,7 @@ jobs:
             set_config "CONFIG_NETFILTER_XT_MATCH_RECENT=y"
           fi
 
-          # IPSET & IPv6_NAT配置*
+          # IPSET & IPv6_NAT & TTL配置*
           if [ "${{ github.event.inputs.NETFILTER }}" = "true" ]; then
             if [[ "$KERNEL_VERSION" != "6.12" && "${CPU}" != mt* ]]; then
               set_config "CONFIG_BPF_STREAM_PARSER=y"
@@ -1340,26 +1112,22 @@ jobs:
             set_config "CONFIG_IP_SET_HASH_NETPORT=y"
             set_config "CONFIG_IP_SET_HASH_NETIFACE=y"
             set_config "CONFIG_IP_SET_LIST_SET=y"
-            set_config "CONFIG_IP6_NF_NAT=y"
+            set_hide_config "CONFIG_IP6_NF_NAT=y"
             set_config "CONFIG_IP6_NF_TARGET_MASQUERADE=y"
+            set_config "CONFIG_NETFILTER_XT_TARGET_HL=y"
+            set_config "CONFIG_IP_NF_TARGET_TTL=y"
+            set_config "CONFIG_IP6_NF_TARGET_HL=y"
+            set_config "CONFIG_NETFILTER_XT_MATCH_HL=y"
+            set_config "CONFIG_IP_NF_MATCH_TTL=y"
+            set_config "CONFIG_IP6_NF_MATCH_HL=y"
+            set_config "CONFIG_IP_NF_MANGLE=y"
+            set_config "CONFIG_IP6_NF_MANGLE=y"
           fi
 
           # 构建依赖项调整及优化
           if [[ "$ENABLE_RUST" == "true" ]]; then
             set_config "CONFIG_RUST=y"
             set_config "CONFIG_ANDROID_BINDER_IPC_RUST=m"
-          fi
-
-      - name: Fix IPv6_NAT Error
-        if: ${{ github.event.inputs.NETFILTER == 'true' }}
-        run: |
-          PATCH_DIR="${GITHUB_WORKSPACE}/kernel_workspace/Action-Build/patches"
-          cd kernel_workspace/kernel_platform/common
-          if [[ "${CPU}" == sm* ]]; then
-            echo "修复启用IPv6 NAT后可能出现的设备误报…"
-            patch -p1 -F 3 < "${PATCH_DIR}/IPv6_NAT_FIX.patch"
-          else
-            echo "你的设备不支持 IPv6 NAT，跳过此步骤。"
           fi
 
       # Custom kernel build time, without adding #1 SMP PREEMPT 自定义内核构建时间，不要加入#1 SMP PREEMPT
@@ -1568,6 +1336,9 @@ jobs:
             KCPPFLAGS="$KCPPFLAGS"
           )
 
+          if [[ -n "${CONFIG_FAKE_DISABLE:-}" ]]; then
+            MAKE_ARGS+=(CONFIG_FAKE_DISABLE="$CONFIG_FAKE_DISABLE")
+          fi
           if [[ -n "$LD_WRAPPER" ]]; then
             MAKE_ARGS+=(LD="$LD_WRAPPER")
           else
@@ -1660,7 +1431,7 @@ jobs:
         continue-on-error: true
         run: |
           LATEST_RUN_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/sidex15/susfs4ksu-module/actions/runs?status=success" | \
+            "https://api.github.com/repos/sidex15/susfs4ksu-module/actions/runs?status=success&event=push" | \
             jq -r '.workflow_runs[] | select(.head_branch == "v1.5.2+") | .id' | head -n 1)
           if [ -z "$LATEST_RUN_ID" ]; then
             echo "No successful run found for branch v1.5.2+"
@@ -1687,16 +1458,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          MANAGER_BRANCH="${{ steps.manager.outputs.manager_branch }}"
-          MANAGER_ARTIFACT="${{ steps.manager.outputs.manager_artifact }}"
+          MANAGER_ARTIFACT=manager
 
-          echo "Using branch: $MANAGER_BRANCH"
+          echo "Using branch: $KSU_MANAGER_BRANCH"
           echo "Downloading artifact: $MANAGER_ARTIFACT"
 
-          run_id=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=$MANAGER_BRANCH&status=success&per_page=1" --jq '.workflow_runs[0].id' || echo "")
+          run_id=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/workflows/build-manager.yml/runs?branch=$KSU_MANAGER_BRANCH&status=success&event=push&per_page=1" --jq '.workflow_runs[0].id' || echo "")
 
           if [[ -z "$run_id" ]]; then
-            echo "No successful workflow run found on branch $MANAGER_BRANCH. Skipping download."
+            echo "No successful workflow run found on branch $KSU_MANAGER_BRANCH. Skipping download."
             exit 0
           fi
           artifact_url=$(gh api "repos/SukiSU-Ultra/SukiSU-Ultra/actions/runs/$run_id/artifacts" | jq -r ".artifacts[] | select(.name == \"$MANAGER_ARTIFACT\") | .archive_download_url" | head -n1)
